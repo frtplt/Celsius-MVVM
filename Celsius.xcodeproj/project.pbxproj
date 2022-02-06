@@ -27,6 +27,7 @@
 		719EA16427A2C0D500C983C3 /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719EA16327A2C0D500C983C3 /* String+Ext.swift */; };
 		71AA55E627A86C6400E3928F /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71AA55E527A86C6400E3928F /* SettingsTableViewController.swift */; };
 		71AA55E827A86EE300E3928F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71AA55E727A86EE300E3928F /* SettingsViewModel.swift */; };
+		71BA022927B009370015F33D /* WeatherPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BA022827B009370015F33D /* WeatherPresentation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +64,7 @@
 		719EA16327A2C0D500C983C3 /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
 		71AA55E527A86C6400E3928F /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		71AA55E727A86EE300E3928F /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		71BA022827B009370015F33D /* WeatherPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherPresentation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +102,7 @@
 				7131F7A327AC32310017DA11 /* WeatherListBuilder.swift */,
 				719D649627A1A6420026E92D /* WeatherListTableViewController.swift */,
 				719EA15B27A29F0400C983C3 /* WeatherListTableViewModel.swift */,
+				71BA022827B009370015F33D /* WeatherPresentation.swift */,
 			);
 			path = WeatherList;
 			sourceTree = "<group>";
@@ -318,6 +321,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71BA022927B009370015F33D /* WeatherPresentation.swift in Sources */,
 				7188262927A7EEC200D4E066 /* Double+Ext.swift in Sources */,
 				71AA55E627A86C6400E3928F /* SettingsTableViewController.swift in Sources */,
 				719EA15627A296A100C983C3 /* WebService.swift in Sources */,

@@ -19,7 +19,7 @@ final class AddWeatherCityViewController: UIViewController {
     
     @IBAction func saveCityButtonPressed() {
         if cityNameTextField.text != "" {
-            if let city = cityNameTextField.text{
+            if let city = cityNameTextField.text {
                 delegate?.searchWeather(withCity: city)
                 dismiss(animated: true)
             }
