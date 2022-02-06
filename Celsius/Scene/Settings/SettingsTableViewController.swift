@@ -7,14 +7,15 @@
 
 import UIKit
 
-protocol SettingsDelegate {
+protocol SettingsDelegate: AnyObject {
     func settingsDone(viewModel: SettingsViewModel)
 }
 
 class SettingsTableViewController: UITableViewController {
     
-    private var settingsViewModel = SettingsViewModel()
-    var delegate: SettingsDelegate?
+    var settingsViewModel: SettingsViewModel!
+    
+    weak var delegate: SettingsDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()

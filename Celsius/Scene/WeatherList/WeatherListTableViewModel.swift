@@ -13,19 +13,30 @@ protocol WeatherListViewModelDelegate: AnyObject {
 }
 
 class WeatherListTableViewModel {
-    
-    private var weatherViewModels = [WeatherViewModel]()
+    private var weatherViewModels = [WeatherPresentation]()
     private var webService: WebServiceProtocol
-    
     weak var delegate: WeatherListViewModelDelegate?
-    var lastUnitSelection: Unit!
+    var lastUnitSelection: Unit {
+        UserDefaults.standard.weatherUnit
+    }
     
     init(webService: WebServiceProtocol) {
         self.webService = webService
     }
-
-     func addWeatherViewModel(_ viewModel: WeatherViewModel){
-        weatherViewModels.append(viewModel)
+    
+    func addWeather(withCity city: String) {
+        webService.addWeather(forCity: city) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let response):
+                let presentation = WeatherPresentation(response: response)
+                self.weatherViewModels.append(presentation)
+                self.delegate?.reloadItems()
+            case .failure(let error):
+                print(error.localizedDescription)
+                break
+            }
+        }
     }
     
     func numberOfSection() -> Int {
@@ -36,60 +47,33 @@ class WeatherListTableViewModel {
         return weatherViewModels.count
     }
     
-    func modelAt(_ index: Int) -> WeatherViewModel {
+    func modelAt(_ index: Int) -> WeatherPresentation {
         return weatherViewModels[index]
     }
-
-    private func toCelsius() {
-        weatherViewModels = weatherViewModels.map { viewModel in
-            let weatherModel = viewModel
-            weatherModel.tempature = (weatherModel.tempature - 32) * 5/9
-            return weatherModel
-        }
-    }
-    
-    private func toFahrenheit() {
-        weatherViewModels = weatherViewModels.map { viewModel in
-            let weatherModel = viewModel
-            weatherModel.tempature = (weatherModel.tempature * 9/5) + 32
-            return weatherModel
-        }
-    }
-    
-    func updateUnit(to unit: Unit) {
-        switch unit {
-        case .celsius:
-            toCelsius()
-        case .fahrenheit:
-            toFahrenheit()
-        }
-    }
-    
-    func lastUnit() {
-    let userDefaults = UserDefaults.standard
-    if let value = userDefaults.value(forKey: "unit") as? String {
-        self.lastUnitSelection = Unit(rawValue: value)!
-    }
-  }
 }
 
-class WeatherViewModel {
+struct WeatherPresentation {
+    private let tempature: Double
+    let city: String
+    let conditionId: Int
     
-    let weather: WeatherResponse
-    var tempature: Double
+    func getTemp(withUnit unit: Unit) -> Double {
+        switch unit {
+        case .celsius:
+            return tempature
+        case .fahrenheit:
+            return (tempature * 9/5) + 32
+        }
+    }
     
-    init(weather: WeatherResponse) {
-        self.weather = weather
-        tempature = weather.main.temp
+    init(response: WeatherResponse) {
+        self.tempature = response.main.temp
+        self.city = response.name
+        self.conditionId = response.weather.first?.id ?? -1
     }
-    var city: String {
-        return weather.name
-    }
-    var weatherid: Int {
-        return weather.weather[0].id
-    }
-    var conditionName: String {
-        switch weatherid {
+    
+    var conditionName: String? {
+        switch conditionId {
         case 200...232:
             return "cloud.bolt"
         case 300...321:
@@ -105,7 +89,7 @@ class WeatherViewModel {
         case 801...804:
             return "cloud.bolt"
         default:
-            return "cloud"
+            return nil
         }
     }
 }

@@ -8,9 +8,8 @@
 import Foundation
 import UIKit
 
-class WeatherListTableViewController: UITableViewController {
-    
-     var weatherListViewModel: WeatherListTableViewModel? {
+final class WeatherListTableViewController: UITableViewController {
+    var weatherListViewModel: WeatherListTableViewModel? {
         didSet {
             weatherListViewModel?.delegate = self
         }
@@ -19,7 +18,6 @@ class WeatherListTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.prefersLargeTitles = true
-        weatherListViewModel?.lastUnit()
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -35,9 +33,12 @@ class WeatherListTableViewController: UITableViewController {
             fatalError("WeatherCell not found")
         }
         
-        let weatherViewModel = (weatherListViewModel?.modelAt(indexPath.row))
-        cell.configure(weatherViewModel!)
-    
+        guard let weatherListViewModel = weatherListViewModel else {
+            return cell
+        }
+        
+        cell.configure(weatherListViewModel.modelAt(indexPath.row), unit: weatherListViewModel.lastUnitSelection)
+        
         return cell
     }
     
@@ -57,6 +58,7 @@ class WeatherListTableViewController: UITableViewController {
             fatalError("SettingsTableViewController not found")
         }
         settingsTableViewController.delegate = self
+        settingsTableViewController.settingsViewModel = SettingsViewModel()
     }
     
     func prepareSegueForAddWeatherCityViewController(segue: UIStoryboardSegue){
@@ -71,22 +73,15 @@ class WeatherListTableViewController: UITableViewController {
 }
 
 extension WeatherListTableViewController: AddWeatherDelegate {
-    func addWeatherDidSave(viewModel: WeatherViewModel) {
-        weatherListViewModel?.addWeatherViewModel(viewModel)
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-        }
+    func searchWeather(withCity city: String) {
+        weatherListViewModel?.addWeather(withCity: city)
     }
 }
 
 extension WeatherListTableViewController: SettingsDelegate {
     func settingsDone(viewModel: SettingsViewModel) {
-        if weatherListViewModel?.lastUnitSelection.rawValue != viewModel.selectedUnit.rawValue {
-            weatherListViewModel?.updateUnit(to: viewModel.selectedUnit)
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-            weatherListViewModel?.lastUnitSelection = Unit(rawValue: viewModel.selectedUnit.rawValue)!
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
         }
     }
 }

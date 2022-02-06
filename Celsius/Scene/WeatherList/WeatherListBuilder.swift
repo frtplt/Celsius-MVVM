@@ -13,9 +13,9 @@ final class WeatherListBuilder {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
         guard let navigationViewController = storyboard.instantiateInitialViewController() as? UINavigationController,
-            let viewController = navigationViewController.topViewController as? WeatherListTableViewController else {
-            fatalError("WeatherListTableViewController not found")
-        }
+              let viewController = navigationViewController.topViewController as? WeatherListTableViewController else {
+                  fatalError("WeatherListTableViewController not found")
+              }
         
         let webService = WebService()
         viewController.weatherListViewModel = WeatherListTableViewModel(webService: webService)

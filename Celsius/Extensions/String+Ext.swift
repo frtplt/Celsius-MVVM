@@ -8,8 +8,7 @@
 import Foundation
 
 extension String {
-    
-    func escaped() -> String{
-        return self.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? self
+    var escaped: String? {
+        return addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
     }
 }

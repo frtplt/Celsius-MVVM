@@ -8,7 +8,7 @@
 import Foundation
 
 protocol WebServiceProtocol {
-    func load<T>(resource: Resource<T>, completion: @escaping (T?) -> Void)
+    func addWeather(forCity city: String, completion: @escaping (Result<WeatherResponse, Error>) -> Void)
 }
 
 struct Resource<T> {
@@ -16,80 +16,35 @@ struct Resource<T> {
     let parse: (Data) -> T?
 }
 
-    final class WebService: WebServiceProtocol {
+enum WebServiceError: Swift.Error {
+    case decoding(Swift.Error)
+    case networking(Swift.Error?)
+}
+
+final class WebService: WebServiceProtocol {
+    func addWeather(forCity city: String, completion: @escaping (Result<WeatherResponse, Error>) -> Void) {
+        guard let query = city.escaped, let weatherUrl = Endpoints.search(query: query).url else {
+            return
+        }
     
-    func load<T>(resource: Resource<T>, completion: @escaping (T?) -> Void){
-        
-        URLSession.shared.dataTask(with: resource.url) { data, response, error in
-            if let data = data {
-                DispatchQueue.main.async {
-                    completion(resource.parse(data))
-                }
+        load(url: weatherUrl, responseType: WeatherResponse.self, completion: completion)
+    }
+}
+
+extension WebService {
+    private func load<ResponseType: Codable>(url: URL, responseType: ResponseType.Type, completion: @escaping (Result<ResponseType, Error>) -> Void) {
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data else {
+                completion(.failure(WebServiceError.networking(error)))
+                return
             }
-            else{
-                completion(nil)
+            
+            do {
+                let response = try JSONDecoder().decode(responseType.self, from: data)
+                completion(.success(response))
+            } catch {
+                completion(.failure(WebServiceError.decoding(error)))
             }
         }.resume()
     }
-    
-    func addWeather(for city: String, completion: @escaping (WeatherViewModel) -> Void){
-        
-        let weatherUrl = Constants.Urls.urlForWeatherByCity(city: city)
-        
-        let weatherResource = Resource<WeatherResponse>(url: weatherUrl) { data in
-            let weatherResponse = try? JSONDecoder().decode(WeatherResponse.self, from: data)
-            return weatherResponse
-        }
-        WebService().load(resource: weatherResource) { (result) in
-            if let weatherResource = result {
-                let viewModel = WeatherViewModel(weather: weatherResource)
-                completion(viewModel)
-            }
-        }
-    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*class WebService {
-    
-    func getWeather(url: URL, completion: @escaping ([WeatherData]?) -> ()){
-        
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            
-            if let error = error {
-                print(error.localizedDescription)
-            }else if let data = data {
-                
-                let weatherList = try? JSONDecoder().decode(WeatherList.self, from: data)
-                
-                if let weatherList = weatherList{
-                    completion(weatherList.weatherList)
-                    
-                }
-        }
-
-    }.resume()
-    
-}
-}*/
-

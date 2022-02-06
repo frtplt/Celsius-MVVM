@@ -13,7 +13,6 @@ enum Unit: String, CaseIterable {
 }
 
 extension Unit {
-    
     var displayName: String {
         get {
             switch(self) {
@@ -27,17 +26,14 @@ extension Unit {
 }
 
 struct SettingsViewModel {
-    
     let units = Unit.allCases
-    private var _selectedUnit: Unit = Unit.celsius
-    
     var selectedUnit: Unit {
         get {
             let userDefaults = UserDefaults.standard
-            if let value = userDefaults.value(forKey: "unit") as? String {
-                return Unit(rawValue: value)!
+            guard let value = userDefaults.string(forKey: "unit") else {
+                return .celsius
             }
-            return _selectedUnit
+            return Unit(rawValue: value) ?? .celsius
         }
         set {
             let userDefault = UserDefaults.standard
