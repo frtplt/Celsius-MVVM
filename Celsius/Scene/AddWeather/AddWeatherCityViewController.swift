@@ -5,7 +5,6 @@
 //  Created by Firat on 26.01.2022.
 //
 
-import Foundation
 import UIKit
 
 protocol AddWeatherDelegate {
